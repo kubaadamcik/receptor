@@ -1,10 +1,11 @@
 using MediatR;
 using receptor.Application.Interfaces;
 using receptor.Application.Recipes.DTOs;
+using receptor.Domain.Entities;
 
 namespace receptor.Application.Recipes.Commands.CreateRecipe;
 
-public class CreateRecipeHandler : IRequestHandler<CreateRecipeCommand, Guid>
+public class CreateRecipeHandler : IRequestHandler<CreateRecipeCommand, string>
 {
     private readonly IRecipeRepository _repository;
 
@@ -13,8 +14,14 @@ public class CreateRecipeHandler : IRequestHandler<CreateRecipeCommand, Guid>
         _repository = repository;
     }
 
-    public async Task<Guid> Handle(CreateRecipeCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(CreateRecipeCommand request, CancellationToken cancellationToken)
     {
-        return await _repository.AddAsync(request.RecipeDto, cancellationToken);
+        var recipe = new Recipe()
+        {
+            Author = request.RecipeDto.Author, Name = request.RecipeDto.Name,
+            Requirements = request.RecipeDto.Requirements, Guide = request.RecipeDto.Guide,
+            Description = request.RecipeDto.Description
+        };
+        return await _repository.AddAsync(recipe, cancellationToken);
     }
 }

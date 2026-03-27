@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "LogSzIkKfMU=",
+  "dgSpecHash": "mhsNRw5XP3w=",
   "success": true,
   "projectFilePath": "/Users/kubaadamcik/RiderProjects/receptor/src/receptor.Domain/receptor.Domain.csproj",
   "expectedPackageFiles": [
+    "/Users/kubaadamcik/.nuget/packages/automapper/16.1.1/automapper.16.1.1.nupkg.sha512",
     "/Users/kubaadamcik/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/kubaadamcik/.nuget/packages/mediatr/14.1.0/mediatr.14.1.0.nupkg.sha512",
     "/Users/kubaadamcik/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",

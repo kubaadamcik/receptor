@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using receptor.Application.Interfaces;
 using receptor.Domain.Entities;
 using receptor.Infrastructure.Persistence;
@@ -20,14 +21,15 @@ public class RecipeRepository : IRecipeRepository
         return recipe.Uuid;
     }
 
-    public async Task<Recipe> GetByIdAsync(string uuid, CancellationToken ct)
+    public async Task<Recipe?> GetByIdAsync(string uuid, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        return await _db.Recipes.FirstOrDefaultAsync(r => r.Uuid == uuid, ct);
+        
     }
 
     public async Task<List<Recipe>> GetAllAsync(CancellationToken ct)
     {
-        throw new NotImplementedException();
+        return await _db.Recipes.ToListAsync(ct);
     }
 
     public async Task UpdateAsync(Recipe recipe, CancellationToken ct)
@@ -35,8 +37,13 @@ public class RecipeRepository : IRecipeRepository
         throw new NotImplementedException();
     }
 
-    public async Task DeleteAsync(Recipe recipe, CancellationToken ct)
+    public async Task DeleteAsync(string uuid, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Uuid == uuid, ct);
+
+        if (recipe is null) return;
+
+        _db.Recipes.Remove(recipe);
+        await _db.SaveChangesAsync(ct);
     }
 }

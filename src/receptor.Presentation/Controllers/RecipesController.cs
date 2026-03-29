@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using receptor.Application.Recipes.Commands.CreateRecipe;
 using receptor.Application.Recipes.Commands.DeleteRecipe;
 using receptor.Application.Recipes.Queries.GetAllRecipes;
+using receptor.Application.Recipes.Queries.GetRecipeById;
 
 namespace receptor.Presentation.Controllers;
 
@@ -40,6 +41,13 @@ public class RecipesController : ControllerBase
 
         return Ok(recipes);
     }
-    
-    [HttpPost("/")]
+
+    [HttpGet("{uuid}")]
+    public async Task<IActionResult> GetById(string uuid)
+    {
+        var recipe = await _mediator.Send(new GetRecipeByIdQuery(uuid));
+        
+        
+        return recipe is null ? NotFound() : Ok(recipe) ;
+    }
 }

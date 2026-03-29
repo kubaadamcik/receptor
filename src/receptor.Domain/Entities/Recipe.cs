@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace receptor.Domain.Entities;
 
-public class Recipe
+public class Recipe : IRequest
 {
     public string Uuid { get; set; } = Guid.NewGuid().ToString();
         

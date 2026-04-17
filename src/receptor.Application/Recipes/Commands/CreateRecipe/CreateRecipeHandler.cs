@@ -18,8 +18,8 @@ public class CreateRecipeHandler : IRequestHandler<CreateRecipeCommand, string>
     {
         var recipe = new Recipe()
         {
-            Author = request.RecipeDto.Author, Name = request.RecipeDto.Name,
-            Requirements = request.RecipeDto.Requirements, Guide = request.RecipeDto.Guide,
+            AuthorUuid = request.RecipeDto.UserUuid, Name = request.RecipeDto.Name,
+            Ingredients = request.RecipeDto.Ingredients, Process = request.RecipeDto.Process,
             Description = request.RecipeDto.Description
         };
         return await _repository.AddAsync(recipe, cancellationToken);

@@ -1,14 +1,50 @@
 import NavBar from "../Components/NavBar.tsx";
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
-
+import {useEffect, useState} from "react";
+import {recipeService} from "../Services/recipeService.ts";
+import type {CreateRecipeDto, CreateRecipeRequest} from "../Types/CreateRecipeDto.ts";
+import {authService} from "../Services/authService.ts";
 export default function CreateRecipe()
 {
   const navigate = useNavigate();
 
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [time, setTime] = useState<number>(0);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<string[]>([""]);
   const [steps, setSteps] = useState<string[]>([""]);
+
+  useEffect(() => {
+    const getAuthState = async () => {
+      const authState = await authService.me() !== null;
+
+      if (!authState) {
+        navigate("/login");
+      }
+    };
+    
+    getAuthState();
+  }, [navigate]);
+  
+  const createRecipe = async () => {
+    const recipeDto: CreateRecipeDto = {
+      name: name,
+      description: description,
+      time: time,
+      userUuid : await authService.me(),
+      ingredients: ingredients.filter(ing => ing.trim() !== ""),
+      process: steps.filter(step => step.trim() !== ""),
+      imagePath: imagePreview ?? ""
+    };
+    const request: CreateRecipeRequest = {
+      recipeDto,
+    };
+    const res = await recipeService.Create(request);
+    if (res) {
+      navigate("/recipes");
+    }
+  }
 
   return (
     <div className="h-full w-full flex flex-col">
@@ -35,6 +71,8 @@ export default function CreateRecipe()
             <label className="text-sm font-semibold text-gray-700">Název receptu</label>
             <input
               type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
               placeholder="Např. Svíčková na smetaně"
               className="border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
             />
@@ -44,13 +82,27 @@ export default function CreateRecipe()
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">Popis</label>
             <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
               placeholder="Krátký popis receptu..."
               rows={3}
               className="border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
             />
           </div>
 
-          {/* Obrázek */}
+          {/* Čas přípravy */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-gray-700">Čas přípravy (minuty)</label>
+            <input
+              type="number"
+              value={time}
+              onChange={e => setTime(parseInt(e.target.value) || 0)}
+              placeholder="Např. 30"
+              className="border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+            />
+          </div>
+
+          {/* Fotografie */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">
               Fotografie
@@ -179,7 +231,10 @@ export default function CreateRecipe()
             >
               Zrušit
             </button>
-            <button className="px-6 py-2.5 bg-amber-400 text-white font-semibold rounded-lg hover:bg-amber-500 transition-colors">
+            <button
+              onClick={createRecipe}
+              className="px-6 py-2.5 bg-amber-400 text-white font-semibold rounded-lg hover:bg-amber-500 transition-colors"
+            >
               Vytvořit recept
             </button>
           </div>

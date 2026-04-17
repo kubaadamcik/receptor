@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using receptor.Application.Recipes.Commands.CreateRecipe;
 using receptor.Application.Recipes.Commands.DeleteRecipe;
@@ -19,19 +20,23 @@ public class RecipesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateRecipeCommand command)
     {
         var uuid = await _mediator.Send(command);
         return Ok(uuid);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> Delete([FromBody] DeleteRecipeCommand command)
+    [HttpDelete("{uuid}")]
+    [Authorize]
+    public async Task<IActionResult> Delete(string uuid)
     {
-        await _mediator.Send(command);
+        var recipe = await _mediator.Send(new GetRecipeByIdQuery(uuid));
+
+        if (recipe is null) return NotFound();
         
-        await _mediator.Send(command);
-        return Ok(); // TODO: Add error handling
+        await _mediator.Send(new DeleteRecipeCommand(uuid));
+        return NoContent();
     }
 
     [HttpGet]
@@ -46,8 +51,8 @@ public class RecipesController : ControllerBase
     public async Task<IActionResult> GetById(string uuid)
     {
         var recipe = await _mediator.Send(new GetRecipeByIdQuery(uuid));
-        
-        
-        return recipe is null ? NotFound() : Ok(recipe) ;
+
+
+        return recipe is null ? NotFound() : Ok(recipe);
     }
 }

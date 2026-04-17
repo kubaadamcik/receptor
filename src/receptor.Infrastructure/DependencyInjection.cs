@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using receptor.Application.Interfaces;
 using receptor.Infrastructure.Persistence;
 using receptor.Infrastructure.Repositories;
+using receptor.Infrastructure.Services;
 
 namespace receptor.Infrastructure;
 
@@ -17,6 +18,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IRecipeRepository, RecipeRepository>();
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }
